@@ -209,4 +209,11 @@ function viewSettings(){
 }
 
 /* ---------- boot ---------- */
+const params=new URLSearchParams(location.search);
+if(params.get('login')==='1'){
+  Auth.end();
+  params.delete('login');
+  const search=params.toString();
+  history.replaceState(null,'',location.pathname+(search?'?'+search:'')+location.hash);
+}
 if(Auth.user())enterApp();

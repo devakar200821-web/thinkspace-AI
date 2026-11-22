@@ -12,8 +12,14 @@ const Auth={
   end(){sessionStorage.removeItem('ts_session');localStorage.removeItem('ts_session')}
 };
 
-const signin=$('#signin'),signup=$('#signup'),message=$('#message');
-function showForm(w){signin.classList.toggle('hidden',w!=='signin');signup.classList.toggle('hidden',w!=='signup');message.textContent='';}
+const signin=$('#signin'),signup=$('#signup'),message=$('#message'),tabs=$$('.auth-tab');
+function showForm(w){
+  signin.classList.toggle('hidden',w!=='signin');
+  signup.classList.toggle('hidden',w!=='signup');
+  message.textContent='';
+  tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.form===w)));
+}
+tabs.forEach(t=>t.onclick=()=>showForm(t.dataset.form));
 $('#toSignup').onclick=e=>{e.preventDefault();showForm('signup')};
 $('#toSignin').onclick=e=>{e.preventDefault();showForm('signin')};
 $$('.toggle').forEach(b=>b.onclick=()=>{const i=document.getElementById(b.dataset.target);i.type=i.type==='password'?'text':'password';b.textContent=i.type==='password'?'Show':'Hide'});

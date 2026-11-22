@@ -29,7 +29,11 @@ $('#logout').onclick=()=>{Auth.end();$('#dashboard').classList.add('hidden');$('
 $$('.nav-item[data-view]').forEach(n=>n.onclick=()=>go(n.dataset.view));
 function go(v){
   state.view=v;
-  $$('.nav-item[data-view]').forEach(n=>n.classList.toggle('active',n.dataset.view===v||(v==='upload'&&n.dataset.view==='upload')));
+  $$('.nav-item[data-view]').forEach(n=>{
+    const active=n.dataset.view===v;
+    n.classList.toggle('active',active);
+    if(active)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');
+  });
   const [t,s]=VIEWS[v];$('#viewTitle').textContent=t;$('#viewSub').textContent=s;
   ({projects:viewWorkspace,upload:viewWorkspace,templates:viewTemplates,history:viewHistory,settings:viewSettings})[v]();
 }
@@ -44,7 +48,7 @@ function viewWorkspace(){
     <p>or <a href="#" id="paste">Paste Text</a> · or drop files here</p></div>
   <div id="sources"></div>
   <h3 class="h3">Choose your output</h3>
-  <div class="tiles">${TYPES.map(t=>`<div class="tile ${t.id===state.output?'sel':''}" data-t="${t.id}"><div>${t.icon}</div><b>${t.name}</b><span>${t.desc}</span></div>`).join('')}</div>
+  <div class="tiles" role="group" aria-label="Choose an output type">${TYPES.map(t=>`<button class="tile ${t.id===state.output?'sel':''}" type="button" data-t="${t.id}" aria-pressed="${t.id===state.output}"><span class="tile-icon" aria-hidden="true">${t.icon}</span><b>${t.name}</b><span>${t.desc}</span></button>`).join('')}</div>
   <button class="primary generate" id="gen">Generate Output →</button>
   ${state.view==='projects'?'<h3 class="h3">My projects</h3><div id="plist"></div>':''}`;
   const file=$('#file'),drop=$('#drop');
@@ -54,7 +58,14 @@ function viewWorkspace(){
   ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag')}));
   drop.addEventListener('drop',e=>addFiles(e.dataTransfer.files));
   $('#paste').onclick=e=>{e.preventDefault();pasteModal()};
-  $$('.tile').forEach(t=>t.onclick=()=>{state.output=t.dataset.t;$$('.tile').forEach(x=>x.classList.toggle('sel',x===t))});
+  $$('.tile').forEach(t=>t.onclick=()=>{
+    state.output=t.dataset.t;
+    $$('.tile').forEach(x=>{
+      const selected=x===t;
+      x.classList.toggle('sel',selected);
+      x.setAttribute('aria-pressed',String(selected));
+    });
+  });
   $('#gen').onclick=generate;
   renderSources();if($('#plist'))renderProjects();
   if(state.view==='upload'&&!state.sources.length)setTimeout(()=>drop.scrollIntoView({behavior:'smooth'}),0);

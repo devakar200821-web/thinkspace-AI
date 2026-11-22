@@ -10,11 +10,20 @@
 <div id="auth" class="shell">
   <section class="brand-panel">
     <div class="logo"><div class="logo-mark">✦</div>ThinkSpace AI</div>
+    <div class="brand-nav" aria-label="ThinkSpace values"><span>THINK</span><i>•</i><span>EXPLORE</span><i>•</i><span>ACHIEVE</span></div>
+    <div class="holo-scene" aria-hidden="true">
+      <div class="holo-ring holo-ring-wide"></div>
+      <div class="holo-ring holo-ring-tilt"></div>
+    </div>
     <div class="brand-copy"><div class="eyebrow">Your research workspace</div><h1>Turn information into ideas.</h1><p>Bring your sources together, explore what matters, and create clear research outputs with an AI-assisted workspace.</p></div>
     <div class="mini-card"><strong>One workspace. Many possibilities.</strong><span>Summaries · Mind maps · Reports · Presentations</span></div>
   </section>
   <section class="form-panel">
-    <form id="signin">
+    <div class="auth-tabs" role="tablist" aria-label="Account options">
+      <button class="auth-tab" type="button" role="tab" id="signinTab" aria-selected="true" aria-controls="signin" data-form="signin">Sign In</button>
+      <button class="auth-tab" type="button" role="tab" id="signupTab" aria-selected="false" aria-controls="signup" data-form="signup">Sign Up</button>
+    </div>
+    <form id="signin" role="tabpanel" aria-labelledby="signinTab" tabindex="0">
       <h2>Welcome back</h2><p class="sub">Sign in to continue to your workspace.</p>
       <div class="field"><label for="loginEmail">Email address</label><input id="loginEmail" type="email" placeholder="you@example.com" required autocomplete="email"><div class="error" id="loginEmailErr"></div></div>
       <div class="field"><label for="loginPassword">Password</label><div class="pw-wrap"><input id="loginPassword" type="password" placeholder="Enter your password" required minlength="6"><button class="toggle" type="button" data-target="loginPassword">Show</button></div><div class="error" id="loginPassErr"></div></div>
@@ -22,7 +31,7 @@
       <button class="primary" type="submit">Sign In</button>
       <p class="switch">Don't have an account? <a href="#" id="toSignup">Create an account</a></p>
     </form>
-    <form id="signup" class="hidden">
+    <form id="signup" class="hidden" role="tabpanel" aria-labelledby="signupTab" tabindex="0">
       <h2>Create your account</h2><p class="sub">Start organising your research with ThinkSpace AI.</p>
       <div class="field"><label for="fullName">Full name</label><input id="fullName" type="text" placeholder="Your name" required autocomplete="name"></div>
       <div class="field"><label for="signupEmail">Email address</label><input id="signupEmail" type="email" placeholder="you@example.com" required autocomplete="email"></div>
@@ -40,12 +49,12 @@
   <aside class="sidebar">
     <div class="logo"><div class="logo-mark">✦</div>ThinkSpace AI</div>
     <div class="nav-label">WORKSPACE</div>
-    <div class="nav-item active" data-view="projects">▦ &nbsp; My Projects</div>
-    <div class="nav-item" data-view="upload">＋ &nbsp; Upload Sources</div>
-    <div class="nav-item" data-view="templates">▤ &nbsp; Templates</div>
-    <div class="nav-item" data-view="history">◷ &nbsp; History</div>
+    <button class="nav-item active" type="button" data-view="projects" aria-current="page">▦ &nbsp; My Projects</button>
+    <button class="nav-item" type="button" data-view="upload">＋ &nbsp; Upload Sources</button>
+    <button class="nav-item" type="button" data-view="templates">▤ &nbsp; Templates</button>
+    <button class="nav-item" type="button" data-view="history">◷ &nbsp; History</button>
     <div class="nav-label" style="margin-top:28px">PREFERENCES</div>
-    <div class="nav-item" data-view="settings">⚙ &nbsp; Settings</div>
+    <button class="nav-item" type="button" data-view="settings">⚙ &nbsp; Settings</button>
     <div class="profile"><div class="avatar" id="avatar">U</div><div><b id="userName">User</b><br><span style="color:var(--muted)">Personal workspace</span></div></div>
   </aside>
   <main class="main">

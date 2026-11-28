@@ -1,0 +1,84 @@
+PROJECT: THINKSPACEAI
+
+Build a complete, modern AI-powered student learning website called ThinkSpaceAI.
+
+DESIGN REQUIREMENTS
+
+1. DARK MODE
+- Dark navy main background.
+- Blue and cyan accent colours.
+- White headings and readable secondary text.
+- Modern rounded cards, subtle borders and clean icons.
+- Premium AI dashboard appearance.
+- Dark mode is the default.
+
+2. LIGHT MODE
+- Add a dark/light toggle in the top-right navigation.
+- Use white and light-grey backgrounds with navy text and blue/cyan accents.
+- Keep exactly the same layout, components, icons and spacing as dark mode.
+- Change only colours, backgrounds, borders and text.
+- Remember the selected theme after refresh.
+
+3. SIDEBAR
+Include:
+- Dashboard
+- My Library
+- Upload & Learn
+- AI Summaries
+- Key Terms
+- Flashcards
+- AI Tutor
+- Quiz Generation
+- Learning Analytics
+- Settings
+
+4. DASHBOARD
+Include:
+- Welcome section: "Your Learning, Organized."
+- Upload Notes action
+- Document, summary and flashcard statistics
+- Study progress
+- Quick action cards
+- Recent activity
+- Learning progress chart
+
+5. UPLOAD & LEARN
+- Allow users to paste lecture notes.
+- Accept text/Markdown, PDF documents, and PNG/JPEG images.
+- Read scanned pages, handwritten notes, and formula images with a local Ollama vision model.
+- Preserve formulas in a readable math notation and let users review extracted text before generating.
+- Provide a Generate Study Materials button.
+- Display generated results clearly.
+
+6. AI OUTPUT
+- Summary: maximum 150 words.
+- Key terms: one-line definitions.
+- Exactly 10 question-and-answer flashcards.
+- Compare zero-shot, few-shot and chain-of-thought summaries for faithfulness, coverage and clarity.
+- Provide selectable JSON or table output for the comparison; keep the API response valid JSON.
+- Do not reveal hidden reasoning.
+
+7. RESPONSIVENESS
+- Support desktop, tablet and mobile.
+- Make sidebar navigation mobile-friendly.
+- Make all visible controls functional.
+
+8. IMPLEMENTATION
+- Generate the CSS and JavaScript needed for the interface.
+- Preserve the ThinkSpaceAI name and features.
+- Connect the frontend to the Flask backend.
+- Frontend sends POST requests to /api/generate with JSON:
+  {"notes": "user lecture notes"}
+- Render the JSON response returned by the backend.
+- Do not put private keys or server secrets in frontend code.
+- Ollama must be accessed by the Flask backend, not directly by public visitors' browsers.
+- Configure OLLAMA_VISION_MODEL to an installed Ollama vision model for image/scanned-page reading.
+
+Deliver a complete working website, not just a static screenshot.
+
+9. ACCOUNTS
+- Provide a sign-in and account-creation screen.
+- Store accounts in the Flask backend with securely hashed passwords and server-managed sessions.
+- Require authentication for AI-generation endpoints.
+- Keep each account's saved study sets and quiz analytics in separate browser storage.
+- Offer an explicit choice to move older, unassigned browser history into a newly created account.

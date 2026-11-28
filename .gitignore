@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+
+# Local application data
+*.sqlite3
+*.db
+.env
+.venv/
+venv/
+

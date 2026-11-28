@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#071329">
+  <title>ThinkSpaceAI — Your Learning, Organized</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #071329;
+      --sidebar: #08152c;
+      --surface: #0c1c37;
+      --surface-raised: #102442;
+      --surface-soft: #0a1a34;
+      --border: rgba(144, 178, 225, .13);
+      --text: #f2f6ff;
+      --muted: #9aacc8;
+      --subtle: #7285a5;
+      --blue: #1685ff;
+      --cyan: #12c6ef;
+      --green: #20d885;
+      --shadow: 0 16px 42px rgba(0, 0, 0, .16);
+    }
+
+    html[data-theme="light"] {
+      color-scheme: light;
+      --page: #f2f6fc;
+      --sidebar: #f8fbff;
+      --surface: #ffffff;
+      --surface-raised: #f4f8ff;
+      --surface-soft: #edf4ff;
+      --border: rgba(38, 72, 125, .12);
+      --text: #102342;
+      --muted: #586d8d;
+      --subtle: #7184a1;
+      --blue: #0876ee;
+      --cyan: #08add5;
+      --green: #0aa96b;
+      --shadow: 0 14px 36px rgba(23, 58, 106, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--page);
+      color: var(--text);
+      font: 14px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      transition: background .2s ease, color .2s ease;
+    }
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    a { color: inherit; text-decoration: none; }
+    .app-shell { display: none; min-height: 100vh; }
+    body.authenticated .app-shell { display: block; }
+    body.authenticated .auth-screen { display: none; }
+    .auth-screen {
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background:
+        radial-gradient(ellipse at 18% 15%, rgba(22, 133, 255, .16), transparent 34%),
+        radial-gradient(ellipse at 88% 85%, rgba(18, 198, 239, .10), transparent 34%),
+        var(--page);
+    }
+    .auth-card {
+      width: min(100%, 430px);
+      padding: 34px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .auth-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; font-size: 19px; font-weight: 750; }
+    .auth-brand svg { width: 30px; height: 30px; color: var(--cyan); }
+    .auth-card h1 { margin: 0 0 5px; font-size: 25px; letter-spacing: -.6px; }
+    .auth-description { margin: 0 0 22px; color: var(--muted); font-size: 13px; }
+    .auth-field { display: grid; gap: 6px; margin-top: 15px; color: var(--muted); font-size: 12px; font-weight: 650; }
+    .auth-field input {
+      width: 100%;
+      height: 43px;
+      padding: 0 12px;
+      outline: none;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface-soft);
+      color: var(--text);
+    }
+    .auth-field[hidden] { display: none; }
+    .auth-field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22, 133, 255, .12); }
+    .auth-submit { width: 100%; margin-top: 20px; }
+    .auth-switch { margin: 18px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+    .auth-switch button { padding: 0; border: 0; background: none; color: var(--cyan); cursor: pointer; font-weight: 700; }
+    .auth-note { margin: 20px 0 0; color: var(--subtle); font-size: 10px; text-align: center; }
+
+    .sidebar {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      width: 218px;
+      padding: 20px 14px 16px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      transition: transform .22s ease, background .2s ease;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px 24px;
+      color: var(--text);
+      font-size: 19px;
+      font-weight: 750;
+      letter-spacing: -.5px;
+    }
+    .brand-mark { width: 28px; height: 28px; color: var(--cyan); }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-height: 37px;
+      padding: 8px 11px;
+      border-radius: 10px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 560;
+      transition: color .16s ease, background .16s ease;
+    }
+    .nav-link:hover, .nav-link.active { color: #fff; background: linear-gradient(100deg, #1478e9, #0757bb); }
+    html[data-theme="light"] .nav-link:hover, html[data-theme="light"] .nav-link.active { color: #fff; }
+    .nav-link svg { width: 16px; height: 16px; flex: 0 0 auto; }
+    .sidebar-note {
+      margin-top: auto;
+      padding: 14px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(20, 133, 255, .13), rgba(15, 197, 235, .04));
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+    }
+    .sidebar-note strong { display: block; color: var(--cyan); font-size: 12px; }
+    .signed-in-email { display: block; overflow: hidden; margin: 5px 0; color: var(--subtle); text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+    .logout-button { margin-top: 9px; padding: 5px 10px; border: 1px solid var(--border); border-radius: 7px; background: var(--surface); color: var(--muted); cursor: pointer; font-size: 10px; }
+    .logout-button:hover { border-color: var(--blue); color: var(--text); }
+
+    .main { min-height: 100vh; margin-left: 218px; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 58px;
+      padding: 0 24px;
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--page) 90%, transparent);
+      backdrop-filter: blur(18px);
+    }
+    .mobile-menu {
+      display: none;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      cursor: pointer;
+    }
+    .search-wrap { position: relative; width: min(390px, 52vw); }
+    .search-wrap svg { position: absolute; top: 10px; left: 12px; width: 16px; color: var(--subtle); }
+    .search-wrap input {
+      width: 100%;
+      height: 36px;
+      padding: 0 14px 0 37px;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      outline: none;
+      background: var(--surface);
+    }
+    input::placeholder, textarea::placeholder { color: var(--subtle); }
+    .search-wrap input:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(22, 133, 255, .12); }
+    .topbar-spacer { flex: 1; }
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .theme-toggle svg { width: 15px; height: 15px; }
+    .avatar {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #177fff, #124fc5);
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .content { width: min(1320px, 100%); margin: 0 auto; padding: 20px 24px 48px; }
+    .hero {
+      position: relative;
+      display: flex;
+      min-height: 150px;
+      align-items: center;
+      overflow: hidden;
+      padding: 20px 26px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background:
+        radial-gradient(ellipse at 82% 55%, rgba(12, 129, 244, .18), transparent 34%),
+        linear-gradient(105deg, var(--surface) 17%, rgba(10, 39, 82, .92) 72%, var(--surface));
+    }
+    html[data-theme="light"] .hero {
+      background:
+        radial-gradient(ellipse at 82% 55%, rgba(44, 153, 255, .16), transparent 35%),
+        linear-gradient(105deg, #fff 15%, #eaf4ff 70%, #f5fbff);
+    }
+    .hero-copy { position: relative; z-index: 2; }
+    .hero h1 { margin: 0 0 3px; font-size: clamp(24px, 3vw, 31px); letter-spacing: -1.1px; line-height: 1.2; }
+    .hero h1 span { color: var(--cyan); }
+    .hero p { margin: 0 0 14px; color: var(--muted); font-size: 14px; }
+    .hero-art { position: absolute; inset: 0 0 0 auto; width: min(48%, 500px); height: 100%; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 0 15px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: linear-gradient(100deg, #1689ff, #0871e2);
+      color: #fff;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+      box-shadow: 0 5px 16px rgba(11, 117, 230, .2);
+      transition: filter .16s ease, transform .16s ease;
+    }
+    .button:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .button:disabled { opacity: .6; cursor: wait; transform: none; }
+    .button svg { width: 15px; height: 15px; }
+    .button.secondary { border-color: var(--border); background: var(--surface-raised); color: var(--text); box-shadow: none; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+    .stat-card, .panel, .section-card {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .stat-card { display: flex; align-items: center; gap: 13px; min-height: 72px; padding: 13px; }
+    .stat-icon {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 11px;
+      background: rgba(21, 132, 255, .18);
+      color: #4aa7ff;
+    }
+    .stat-icon svg { width: 20px; height: 20px; }
+    .stat-icon.purple { background: rgba(128, 84, 247, .18); color: #a895ff; }
+    .stat-icon.green { background: rgba(18, 194, 129, .16); color: #32dda0; }
+    .stat-icon.cyan { background: rgba(19, 192, 230, .16); color: var(--cyan); }
+    .stat-label { color: var(--muted); font-size: 11px; }
+    .stat-bottom { display: flex; align-items: baseline; gap: 10px; }
+    .stat-value { font-size: 21px; font-weight: 750; line-height: 1.2; }
+    .stat-change { color: var(--green); font-size: 10px; font-weight: 700; }
+    .progress-track { width: 92px; height: 6px; overflow: hidden; border-radius: 99px; background: var(--surface-raised); }
+    .progress-track span { display: block; width: 78%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+
+    .dashboard-grid { display: grid; grid-template-columns: 1.05fr 1.05fr 1fr; gap: 12px; margin-top: 12px; }
+    .panel { min-width: 0; padding: 14px; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+    .panel-title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; font-weight: 700; }
+    .panel-title svg { width: 16px; height: 16px; color: var(--cyan); }
+    .text-link { border: 0; background: none; color: var(--blue); cursor: pointer; font-size: 11px; }
+    .quick-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .quick-action {
+      display: flex;
+      min-height: 75px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 4px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 10px;
+      text-align: center;
+      transition: border-color .16s ease, transform .16s ease;
+    }
+    .quick-action:hover { transform: translateY(-2px); border-color: var(--blue); }
+    .quick-action svg { width: 22px; height: 22px; color: #399cff; }
+    .quick-action:nth-child(2) svg { color: #f6ad3d; }
+    .quick-action:nth-child(3) svg { color: #ac87ff; }
+    .activity-list { display: grid; gap: 12px; }
+    .activity-row { display: flex; align-items: center; gap: 9px; min-width: 0; font-size: 11px; }
+    .activity-dot { display: grid; width: 18px; height: 18px; flex: 0 0 auto; place-items: center; border-radius: 6px; background: rgba(21, 200, 172, .15); color: var(--cyan); }
+    .activity-dot svg { width: 11px; height: 11px; }
+    .activity-name { overflow: hidden; flex: 1; color: var(--text); text-overflow: ellipsis; white-space: nowrap; }
+    .activity-time { color: var(--subtle); font-size: 10px; white-space: nowrap; }
+    .chart-wrap { display: flex; align-items: center; justify-content: center; gap: 13px; min-height: 87px; }
+    .progress-ring { position: relative; display: grid; width: 80px; height: 80px; flex: 0 0 auto; place-items: center; }
+    .progress-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+    .progress-ring circle { fill: none; stroke-width: 7; }
+    .progress-ring .track { stroke: var(--surface-raised); }
+    .progress-ring .value { stroke: var(--cyan); stroke-linecap: round; stroke-dasharray: 220; stroke-dashoffset: 48; }
+    .progress-ring strong { font-size: 17px; }
+    .week-chart { width: min(190px, 58%); height: 82px; overflow: visible; }
+    .week-days { display: flex; justify-content: space-between; padding-left: 92px; color: var(--subtle); font-size: 9px; }
+
+    .section-card { margin-top: 16px; padding: 20px; scroll-margin-top: 74px; }
+    .section-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
+    .section-header h2 { margin: 0 0 4px; font-size: 18px; letter-spacing: -.35px; }
+    .section-header p { margin: 0; color: var(--muted); font-size: 12px; }
+    .upload-layout { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(230px, .7fr); gap: 14px; }
+    .notes-input {
+      display: block;
+      width: 100%;
+      min-height: 160px;
+      resize: vertical;
+      padding: 14px;
+      outline: none;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--text);
+    }
+    .upload-drop {
+      display: flex;
+      min-height: 160px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 18px;
+      border: 1px dashed rgba(66, 153, 245, .5);
+      border-radius: 12px;
+      background: var(--surface-soft);
+      color: var(--muted);
+      text-align: center;
+    }
+    .upload-drop svg { width: 27px; height: 27px; color: var(--blue); }
+    .upload-drop strong { color: var(--text); font-size: 12px; }
+    .upload-drop small { font-size: 10px; }
+    .file-input { display: none; }
+    .file-label { color: var(--blue); cursor: pointer; font-size: 11px; font-weight: 700; }
+    .upload-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+    .helper-text { color: var(--subtle); font-size: 11px; }
+    .status-message { display: none; margin-top: 12px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 9px; color: var(--muted); font-size: 12px; }
+    .status-message.visible { display: block; }
+    .status-message.error { border-color: rgba(245, 91, 91, .35); background: rgba(245, 91, 91, .08); color: #ff9a9a; }
+    .status-message.success { border-color: rgba(32, 216, 133, .28); background: rgba(32, 216, 133, .07); color: var(--green); }
+
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+    .result-card { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-soft); }
+    .result-card h3 { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 10px; font-size: 13px; }
+    .copy-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      min-height: 27px;
+      padding: 0 9px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 650;
+    }
+    .copy-button:hover { border-color: var(--blue); color: var(--blue); }
+    .copy-button[hidden] { display: none; }
+    .result-card p { margin: 0; color: var(--muted); font-size: 12px; white-space: pre-wrap; }
+    .empty-result { color: var(--subtle) !important; }
+    .term-list { display: grid; gap: 9px; }
+    .term-item { color: var(--muted); font-size: 11px; }
+    .term-item strong { color: var(--text); }
+    .flashcard-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .flashcard {
+      min-height: 72px;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      font-size: 11px;
+    }
+    .flashcard span { display: block; margin-top: 5px; color: var(--subtle); font-size: 9px; text-transform: uppercase; }
+    .flashcard.flipped { border-color: var(--cyan); }
+    .comparison-list { display: grid; gap: 9px; }
+    .comparison-item { padding: 9px 10px; border-radius: 8px; background: var(--surface); }
+    .comparison-item strong { display: block; margin-bottom: 3px; font-size: 11px; }
+    .comparison-item p { font-size: 10px; }
+    .comparison-controls { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+    #prompt-comparison h3 { flex-wrap: wrap; }
+    #prompt-comparison h3 > span { flex: 1 1 150px; }
+    .comparison-controls label { color: var(--subtle); font-size: 9px; font-weight: 600; }
+    .comparison-format {
+      min-height: 27px;
+      padding: 0 7px;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      background: var(--surface);
+      color: var(--muted);
+      font: inherit;
+      font-size: 10px;
+    }
+    .comparison-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+    .comparison-table { width: 100%; min-width: 930px; border-collapse: collapse; background: var(--surface); color: var(--muted); font-size: 10px; }
+    .comparison-table th, .comparison-table td { padding: 9px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    .comparison-table thead th { color: var(--text); font-size: 9px; }
+    .comparison-table tbody th { color: var(--text); white-space: nowrap; }
+    .comparison-table .comparison-summary { min-width: 210px; white-space: pre-wrap; }
+    .comparison-table .comparison-score { color: var(--text); font-variant-numeric: tabular-nums; text-align: center; }
+    .comparison-table tr.comparison-winner { background: rgba(32, 216, 133, .06); }
+    .comparison-note { margin: 8px 0 0 !important; color: var(--subtle) !important; font-size: 9px !important; }
+    .comparison-json { max-height: 380px; overflow: auto; margin: 0; padding: 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); font: 10px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+    .library-tools { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .library-list { display: grid; gap: 8px; }
+    .library-item { display: flex; align-items: center; gap: 11px; padding: 11px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft); }
+    .library-item > div:nth-child(2) { min-width: 0; flex: 1; }
+    .library-item strong { display: block; overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .library-item small { color: var(--subtle); font-size: 10px; }
+    .library-open { border: 0; background: none; color: var(--blue); cursor: pointer; font-size: 11px; }
+    .library-delete { border: 1px solid rgba(245, 91, 91, .25); border-radius: 7px; padding: 5px 8px; background: rgba(245, 91, 91, .08); color: #ee7979; cursor: pointer; font-size: 10px; }
+    .library-delete:hover { border-color: #ee7979; background: rgba(245, 91, 91, .14); }
+    .inline-form { display: flex; gap: 9px; }
+    .inline-form input, .inline-form textarea {
+      min-width: 0;
+      flex: 1;
+      padding: 11px 12px;
+      outline: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface-soft);
+      color: var(--text);
+    }
+    .inline-form input:focus, .inline-form textarea:focus { border-color: var(--blue); }
+    .answer-box { margin-top: 12px; padding: 13px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft); color: var(--muted); white-space: pre-wrap; }
+    .quiz-list { display: grid; gap: 12px; }
+    .quiz-question { padding: 13px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface-soft); }
+    .quiz-question > strong { display: block; margin-bottom: 9px; font-size: 12px; }
+    .quiz-option { width: 100%; margin-top: 5px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); cursor: pointer; text-align: left; font-size: 11px; }
+    .quiz-option.selected { border-color: var(--blue); color: var(--blue); }
+    .quiz-option.correct { border-color: var(--green); color: var(--green); }
+    .quiz-option.incorrect { border-color: #ef7474; color: #ef7474; }
+    .quiz-option:disabled { cursor: default; opacity: .88; }
+    .quiz-feedback { margin: 9px 0 0; color: var(--muted); font-size: 11px; }
+    .quiz-feedback.correct { color: var(--green); }
+    .quiz-feedback.incorrect { color: #ef7474; }
+    .quiz-result { margin-bottom: 12px; padding: 13px 15px; border: 1px solid rgba(18, 194, 129, .35); border-radius: 10px; background: rgba(18, 194, 129, .08); color: var(--text); font-size: 14px; font-weight: 700; }
+    .analytics-summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
+    .analytics-stat { padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-soft); }
+    .analytics-stat span { display: block; color: var(--muted); font-size: 10px; }
+    .analytics-stat strong { display: block; margin-top: 3px; font-size: 18px; }
+    .analytics-bars { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); align-items: stretch; gap: 10px; height: 145px; padding: 10px 8px 0; border-bottom: 1px solid var(--border); }
+    .analytics-day { display: flex; min-width: 0; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; }
+    .analytics-day-value { min-height: 12px; color: var(--muted); font-size: 9px; }
+    .analytics-bar { width: min(100%, 28px); min-height: 0; border-radius: 6px 6px 0 0; background: linear-gradient(0deg, var(--blue), var(--cyan)); transition: height .25s ease; }
+    .analytics-bar.empty { opacity: .16; }
+    .analytics-labels { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; padding-top: 7px; color: var(--subtle); font-size: 10px; text-align: center; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); }
+    .settings-row strong { display: block; font-size: 12px; }
+    .settings-row small { color: var(--muted); font-size: 11px; }
+    footer { padding: 22px 0 0; color: var(--subtle); font-size: 10px; text-align: center; }
+    .overlay { display: none; }
+
+    @media (max-width: 1100px) {
+      .sidebar { width: 194px; }
+      .main { margin-left: 194px; }
+      .content { padding-right: 18px; padding-left: 18px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .dashboard-grid { grid-template-columns: 1fr 1fr; }
+      .dashboard-grid .panel:last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 760px) {
+      .sidebar { width: 250px; transform: translateX(-105%); box-shadow: 20px 0 40px rgba(0, 0, 0, .2); }
+      .sidebar.open { transform: translateX(0); }
+      .overlay.visible { position: fixed; inset: 0; z-index: 19; display: block; background: rgba(3, 10, 22, .55); }
+      .main { margin-left: 0; }
+      .topbar { height: 56px; padding: 0 14px; gap: 10px; }
+      .mobile-menu { display: inline-flex; flex: 0 0 auto; }
+      .search-wrap { width: auto; flex: 1; }
+      .theme-toggle span { display: none; }
+      .content { padding: 14px 13px 36px; }
+      .hero { min-height: 168px; padding: 19px; }
+      .hero-art { width: 47%; opacity: .82; }
+      .hero-copy { max-width: 68%; }
+      .hero h1 { font-size: 25px; }
+      .hero p { font-size: 12px; }
+      .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .stat-card { min-height: 68px; gap: 9px; padding: 10px; }
+      .stat-icon { width: 35px; height: 35px; }
+      .stat-value { font-size: 18px; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .dashboard-grid .panel:last-child { grid-column: auto; }
+      .upload-layout { grid-template-columns: 1fr; }
+      .upload-drop { min-height: 120px; }
+      .section-card { padding: 15px; }
+    }
+    @media (max-width: 440px) {
+      .topbar { padding-right: 10px; padding-left: 10px; }
+      .avatar { width: 29px; height: 29px; }
+      .hero { min-height: 154px; }
+      .hero-art { width: 52%; opacity: .55; }
+      .hero-copy { max-width: 82%; }
+      .hero h1 { font-size: 22px; }
+      .hero p { max-width: 200px; font-size: 11px; }
+      .stat-card { gap: 7px; padding: 8px; }
+      .stat-icon { width: 31px; height: 31px; }
+      .stat-label { font-size: 10px; }
+      .stat-value { font-size: 17px; }
+      .progress-track { width: 57px; }
+      .quick-grid { gap: 5px; }
+      .quick-action { min-height: 68px; font-size: 9px; }
+      .results-grid { grid-template-columns: 1fr; }
+      .flashcard-list { grid-template-columns: 1fr; }
+      .section-header { flex-direction: column; }
+      .upload-footer { align-items: flex-start; flex-direction: column; }
+      .inline-form { flex-direction: column; }
+      .week-chart { width: 58%; }
+      .comparison-controls { width: 100%; justify-content: flex-end; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <section class="auth-screen" id="auth-screen">
+    <div class="auth-card">
+      <a class="auth-brand" href="#auth-screen" aria-label="ThinkSpaceAI">
+        <svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 9.5 13.7 5v18L3 27V9.5Z" fill="currentColor" opacity=".8"/><path d="m29 9.5-10.7-4v18L29 27V9.5Z" fill="currentColor"/><path d="M16 7v20" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        ThinkSpaceAI
+      </a>
+      <h1 id="auth-title">Welcome back</h1>
+      <p class="auth-description" id="auth-description">Sign in to continue to your learning space.</p>
+      <form id="auth-form">
+        <label class="auth-field" for="auth-email">Email address
+          <input id="auth-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+        </label>
+        <label class="auth-field" for="auth-password">Password
+          <input id="auth-password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="128" required>
+        </label>
+        <label class="auth-field" id="auth-confirm-field" for="auth-confirm" hidden>Confirm password
+          <input id="auth-confirm" name="confirm-password" type="password" autocomplete="new-password" minlength="8" maxlength="128">
+        </label>
+        <button class="button auth-submit" id="auth-submit" type="submit">Sign in</button>
+      </form>
+      <div class="status-message" id="auth-status" role="status" aria-live="polite"></div>
+      <p class="auth-switch"><span id="auth-switch-label">New to ThinkSpaceAI?</span> <button type="button" id="auth-mode-toggle">Create account</button></p>
+      <p class="auth-note">Your study library is private to your account on this device.</p>
+    </div>
+  </section>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#dashboard" aria-label="ThinkSpaceAI home">
+        <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 9.5 13.7 5v18L3 27V9.5Z" fill="currentColor" opacity=".8"/><path d="m29 9.5-10.7-4v18L29 27V9.5Z" fill="currentColor"/><path d="M16 7v20M5.5 11l5.5-2M26.5 11 21 9" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        ThinkSpaceAI
+      </a>
+      <nav class="nav-list" aria-label="Sections">
+        <a class="nav-link active" href="#dashboard" data-section="dashboard"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 11.2 12 3l9 8.2v9.3a.5.5 0 0 1-.5.5H14v-6h-4v6H3.5a.5.5 0 0 1-.5-.5v-9.3Z"/></svg>Dashboard</a>
+        <a class="nav-link" href="#library" data-section="library"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3.5A1.5 1.5 0 0 1 6.5 2H20v17H6.5A1.5 1.5 0 0 0 5 20.5v-17ZM3 5h1v15.5A3.5 3.5 0 0 1 7.5 17H20v3H7.5A2.5 2.5 0 0 0 5 22.5V23H3V5Z"/></svg>My Library</a>
+        <a class="nav-link" href="#upload" data-section="upload"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 6.5 8.5 8 10l3-3v9h2V7l3 3 1.5-1.5L12 3ZM4 15h2v4h12v-4h2v6H4v-6Z"/></svg>Upload &amp; Learn</a>
+        <a class="nav-link" href="#summaries" data-section="summaries"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 9.8 8.8 3 11l6.8 2.2L12 20l2.2-6.8L21 11l-6.8-2.2L12 2ZM5 3l-.9 2.1L2 6l2.1.9L5 9l.9-2.1L8 6l-2.1-.9L5 3Zm14 11-1.1 2.9L15 18l2.9 1.1L19 22l1.1-2.9L23 18l-2.9-1.1L19 14Z"/></svg>AI Summaries</a>
+        <a class="nav-link" href="#terms" data-section="terms"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H21v16H6.5A2.5 2.5 0 0 0 4 20.5v-16ZM2 5h2v15.5A2.5 2.5 0 0 1 6.5 18H21v2H6.5A4.5 4.5 0 0 0 2 24V5Z"/><path d="M8 6h9v2H8zm0 4h9v2H8z"/></svg>Key Terms</a>
+        <a class="nav-link" href="#flashcards" data-section="flashcards"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm3 4v2h8V8H7Zm0 4v2h5v-2H7Zm13-5h2v12h-2V7Z"/></svg>Flashcards</a>
+        <a class="nav-link" href="#tutor" data-section="tutor"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a7 7 0 0 0-4 12.74V18h8v-3.26A7 7 0 0 0 12 2Zm-2 18h4v2h-4v-2Zm1-15h2v5h-2V5Z"/></svg>AI Tutor</a>
+        <a class="nav-link" href="#quiz" data-section="quiz"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm3 4v2h10V7H7Zm0 4v2h7v-2H7Zm0 4v2h9v-2H7Z"/></svg>Quiz Generation</a>
+        <a class="nav-link" href="#analytics" data-section="analytics"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h3v18H3V3Zm5 10h3v8H8v-8Zm5-6h3v14h-3V7Zm5 3h3v11h-3V10Z"/></svg>Learning Analytics</a>
+        <a class="nav-link" href="#settings" data-section="settings"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m19.4 13 .1-1-.1-1 2-1.5-2-3.5-2.3.9a7.7 7.7 0 0 0-1.7-1L15 3h-4l-.4 2.9a7.7 7.7 0 0 0-1.7 1l-2.3-.9-2 3.5 2 1.5-.1 1 .1 1-2 1.5 2 3.5 2.3-.9a7.7 7.7 0 0 0 1.7 1L11 22h4l.4-2.9a7.7 7.7 0 0 0 1.7-1l2.3.9 2-3.5-2-1.5ZM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg>Settings</a>
+      </nav>
+      <div class="sidebar-note"><strong>✦ Study smarter</strong><span class="signed-in-email" id="signed-in-email"></span>Achieve more, one note at a time.<button class="logout-button" id="logout-button" type="button">Sign out</button></div>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobile-menu" type="button" aria-label="Open navigation" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        <label class="search-wrap" aria-label="Search your notes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></svg>
+          <input type="search" id="search-input" placeholder="Search your notes..." autocomplete="off">
+        </label>
+        <div class="topbar-spacer"></div>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light mode">
+          <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+          <span id="theme-label">Dark mode</span>
+        </button>
+        <div class="avatar" id="user-avatar" aria-hidden="true">T</div>
+      </header>
+
+      <div class="content">
+        <section class="hero" id="dashboard">
+          <div class="hero-copy">
+            <h1>Your Learning, <span>Organized.</span></h1>
+            <p>Make your studying smarter with AI.</p>
+            <button class="button" type="button" data-scroll="upload"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 6.5 8.5 8 10l3-3v9h2V7l3 3 1.5-1.5L12 3ZM4 15h2v4h12v-4h2v6H4v-6Z"/></svg>Upload Notes <span aria-hidden="true">→</span></button>
+          </div>
+          <svg class="hero-art" viewBox="0 0 520 180" fill="none" aria-hidden="true">
+            <ellipse cx="314" cy="132" rx="190" ry="31" fill="#0878EA" fill-opacity=".08" stroke="#1587FF" stroke-opacity=".27"/>
+            <ellipse cx="314" cy="130" rx="153" ry="20" stroke="#13BDEB" stroke-opacity=".24"/>
+            <path d="M200 135c42-34 74-44 122-44 44 0 89 13 123 40" stroke="#0878EA" stroke-opacity=".48"/>
+            <g transform="translate(202 62) rotate(-10)"><rect width="37" height="48" rx="5" fill="#197FEB"/><path d="M9 14h18M9 21h18M9 28h12" stroke="#9DCEFF" stroke-width="2" stroke-linecap="round"/><path d="M27 0v11h10" fill="#58AEFF"/></g>
+            <g transform="translate(426 68) rotate(9)"><path d="m0 13 24-13 25 13-25 13L0 13Z" fill="#126DE1"/><path d="M8 19v13c9 7 23 7 32 0V19L24 28 8 19Z" fill="#0C4EA9"/><path d="M48 13v20" stroke="#45A6FF" stroke-width="2"/><circle cx="48" cy="34" r="3" fill="#45A6FF"/></g>
+            <g transform="translate(260 57)"><path d="M10 15h9v20h-9z" fill="#1683FF"/><path d="m6 15 8-12 8 12H6Z" fill="#47B6FF"/><circle cx="14" cy="6" r="2" fill="#B7E5FF"/></g>
+            <g transform="translate(302 33)">
+              <path d="M42 11c-24 0-39 16-39 38v23h78V49c0-22-15-38-39-38Z" fill="#E4F4FF" stroke="#67BDFF" stroke-width="3"/>
+              <path d="M3 45c-8-1-12 5-12 14s5 16 14 15M81 45c8-1 12 5 12 14s-5 16-14 15" fill="#347FD1" stroke="#8BD4FF" stroke-width="3"/>
+              <rect x="14" y="34" width="56" height="29" rx="13" fill="#071C43"/>
+              <ellipse cx="31" cy="49" rx="6" ry="7" fill="#15D9FF"/><ellipse cx="54" cy="49" rx="6" ry="7" fill="#15D9FF"/>
+              <path d="M27 70h30v9c0 12-7 19-15 19s-15-7-15-19v-9Z" fill="#D6EDFF" stroke="#5CAEFF" stroke-width="3"/>
+              <path d="M29 79h27v4H29z" fill="#48A4F5"/>
+              <path d="M6 105c-2-13 7-22 19-22h34c12 0 21 9 19 22l-5 27H11l-5-27Z" fill="#E8F6FF" stroke="#5CAEFF" stroke-width="3"/>
+              <path d="M1 100c-15 5-24 12-24 22v5h50v-5c0-10-11-18-26-22ZM82 100c15 5 24 12 24 22v5H56v-5c0-10 11-18 26-22Z" fill="#F6FBFF" stroke="#5CAEFF" stroke-width="3"/>
+              <path d="M-23 126h81v14h-81zM56 126h81v14H56z" fill="#1C75D8"/>
+              <path d="M-15 125h74l-10 8h-64v-8ZM65 125h64v8H55l10-8Z" fill="#0E58BD"/>
+              <path d="M18 96c14 3 21 11 24 22v10H13l5-32ZM67 96c-14 3-21 11-24 22v10h29l-5-32Z" fill="#126FE0"/>
+              <path d="M22 104h18M50 104h18" stroke="#67C5FF" stroke-width="3" stroke-linecap="round"/>
+            </g>
+            <circle cx="457" cy="45" r="2" fill="#11C8F5"/><circle cx="237" cy="36" r="2" fill="#11C8F5"/><circle cx="474" cy="111" r="2" fill="#11C8F5"/>
+          </svg>
+        </section>
+
+        <section class="stats-grid" aria-label="Study statistics">
+          <article class="stat-card"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 2h10l5 5v15H5V2Zm9 1.5V8h4.5L14 3.5ZM8 12v2h9v-2H8Zm0 4v2h7v-2H8Z"/></svg></div><div><div class="stat-label">Documents</div><div class="stat-bottom"><strong class="stat-value" id="documents-count">0</strong><span class="stat-change">Your library</span></div></div></article>
+          <article class="stat-card"><div class="stat-icon purple"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.1 6.3L20 10.5l-5.9 2.2L12 19l-2.1-6.3L4 10.5l5.9-2.2L12 2Zm8 13 .9 2.1L23 18l-2.1.9L20 21l-.9-2.1L17 18l2.1-.9L20 15Z"/></svg></div><div><div class="stat-label">AI Summaries</div><div class="stat-bottom"><strong class="stat-value" id="summaries-count">0</strong><span class="stat-change">Generated</span></div></div></article>
+          <article class="stat-card"><div class="stat-icon green"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h18v16H3V4Zm3 4v2h12V8H6Zm0 4v2h9v-2H6Zm0 4v1h6v-1H6Z"/></svg></div><div><div class="stat-label">Flashcards</div><div class="stat-bottom"><strong class="stat-value" id="flashcards-count">0</strong><span class="stat-change">Ready to study</span></div></div></article>
+          <article class="stat-card"><div class="stat-icon cyan"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h4v8H3v-8Zm7-6h4v14h-4V7Zm7-5h4v19h-4V2Z"/></svg></div><div><div class="stat-label">Quiz Progress</div><div class="stat-bottom"><strong class="stat-value" id="progress-value">0%</strong><div class="progress-track"><span id="progress-fill" style="width:0%"></span></div></div></div></article>
+        </section>
+
+        <section class="dashboard-grid" aria-label="Dashboard overview">
+          <article class="panel">
+            <div class="panel-heading"><h2 class="panel-title"><span style="color:#ffb72e">⚡</span>Quick Actions</h2></div>
+            <div class="quick-grid">
+              <button class="quick-action" type="button" data-scroll="upload"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 6.5 8.5 8 10l3-3v9h2V7l3 3 1.5-1.5L12 3ZM4 15h2v4h12v-4h2v6H4v-6Z"/></svg><span>Upload<br>Notes</span></button>
+              <button class="quick-action" type="button" data-scroll="library"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4V4Zm3 3v2h10V7H7Zm0 4v2h10v-2H7Zm0 4v2h7v-2H7Z"/></svg><span>View<br>Library</span></button>
+              <button class="quick-action" type="button" data-scroll="tutor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3a7 7 0 0 0-4 12.7V19h8v-3.3A7 7 0 0 0 12 3Z"/><path d="M9 22h6M10 8h4m-2-2v4m-6 2 2 1m10-1-2 1"/></svg><span>Start<br>AI Tutor</span></button>
+              <button class="quick-action" type="button" data-scroll="quiz"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8m-8 4h5"/></svg><span>Generate<br>Quiz</span></button>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><h2 class="panel-title"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3h14a2 2 0 0 1 2 2v14H3V5a2 2 0 0 1 2-2Zm3 4v4l3-2 3 2V7H8Zm-1 8v2h10v-2H7Z"/></svg>Recent Activity</h2><button class="text-link" type="button" data-scroll="library">View all →</button></div>
+            <div class="activity-list" id="activity-list"><div class="activity-row"><span class="activity-dot">✦</span><span class="activity-name">Your learning journey starts here</span><span class="activity-time">Now</span></div></div>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><h2 class="panel-title"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 19h18v2H3v-2Zm2-3 4-5 3 2 6-8 2 1-7 10-3-2-3 4-2-2Z"/></svg>Your Learning Progress</h2></div>
+            <div class="chart-wrap">
+              <div class="progress-ring"><svg viewBox="0 0 80 80"><circle class="track" cx="40" cy="40" r="35"/><circle class="value" id="ring-progress" cx="40" cy="40" r="35"/></svg><strong id="ring-label">0%</strong></div>
+              <svg class="week-chart" viewBox="0 0 190 82" preserveAspectRatio="none" aria-label="Weekly learning trend">
+                <defs><linearGradient id="chartFill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#11baf0" stop-opacity=".3"/><stop offset="1" stop-color="#11baf0" stop-opacity="0"/></linearGradient></defs>
+                <path d="M5 63 32 51 58 47 84 30 110 33 137 22 164 12 185 5V78H5Z" fill="url(#chartFill)"/>
+                <path d="M5 63 32 51 58 47 84 30 110 33 137 22 164 12 185 5" stroke="#13b9ef" stroke-width="2" fill="none"/>
+                <g fill="#13b9ef" stroke="var(--surface)" stroke-width="2"><circle cx="5" cy="63" r="3.5"/><circle cx="32" cy="51" r="3.5"/><circle cx="58" cy="47" r="3.5"/><circle cx="84" cy="30" r="3.5"/><circle cx="110" cy="33" r="3.5"/><circle cx="137" cy="22" r="3.5"/><circle cx="164" cy="12" r="3.5"/><circle cx="185" cy="5" r="3.5"/></g>
+              </svg>
+            </div><div class="week-days"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+          </article>
+        </section>
+
+        <section class="section-card" id="upload">
+          <div class="section-header"><div><h2>Upload &amp; Learn</h2><p>Turn your lecture notes into a personal study kit with Ollama AI.</p></div></div>
+          <div class="upload-layout">
+            <textarea class="notes-input" id="notes-input" placeholder="Paste your lecture notes here...&#10;&#10;The more detail you include, the more useful your study materials will be." aria-label="Lecture notes"></textarea>
+            <div class="upload-drop" id="upload-drop">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 16V4m0 0L7 9m5-5 5 5"/><path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></svg>
+              <strong id="file-name">Drop a notes file here</strong>
+              <small>PDF, PNG/JPEG, text and Markdown · up to 20 MB</small>
+              <label class="file-label" for="file-upload">Browse files</label>
+              <input class="file-input" type="file" id="file-upload" accept=".txt,.md,.pdf,.png,.jpg,.jpeg,text/plain,text/markdown,application/pdf,image/png,image/jpeg">
+            </div>
+          </div>
+          <div class="upload-footer"><span class="helper-text">Files are processed locally. Images and scanned PDFs need the Ollama vision model: ollama pull llama3.2-vision.</span><button class="button" id="generate-button" type="button"><svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.3 7.1L21 12l-6.7 2.9L12 22l-2.3 7.1L3 12l6.7-2.9L12 2Z"/></svg>Generate Study Materials</button></div>
+          <div class="status-message" id="generate-status" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="section-card" id="results">
+          <div class="section-header"><div><h2>Your Study Materials</h2><p>Generated from your notes. Click a flashcard to reveal its answer.</p></div><button class="copy-button" type="button" data-copy="all">Copy all</button></div>
+          <div class="results-grid">
+            <article class="result-card" id="summaries"><h3><span>AI Summary <span style="color:var(--subtle);font-size:10px">· max 150 words</span></span><button class="copy-button" type="button" data-copy="summary">Copy</button></h3><p class="empty-result" id="summary-output">Your concise summary will appear here.</p></article>
+            <article class="result-card" id="terms"><h3><span>Key Terms</span><button class="copy-button" type="button" data-copy="terms">Copy</button></h3><div class="term-list" id="terms-output"><p class="empty-result">Important concepts and definitions will appear here.</p></div></article>
+            <article class="result-card" id="flashcards"><h3><span>Flashcards <span style="color:var(--subtle);font-size:10px">· 10 cards</span></span><button class="copy-button" type="button" data-copy="flashcards">Copy</button></h3><div class="flashcard-list" id="flashcards-output"><p class="empty-result">Your question-and-answer cards will appear here.</p></div></article>
+            <article class="result-card" id="prompt-comparison">
+              <h3>
+                <span>Summary Prompt Comparison</span>
+                <div class="comparison-controls">
+                  <label for="comparison-format">Format</label>
+                  <select class="comparison-format" id="comparison-format" aria-label="Summary comparison output format">
+                    <option value="table">Table</option>
+                    <option value="json">JSON</option>
+                  </select>
+                  <button class="copy-button" type="button" data-copy="comparison">Copy</button>
+                </div>
+              </h3>
+              <div class="comparison-list" id="comparison-output"><p class="empty-result">Generate study materials to compare summary quality across prompt techniques.</p></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section-card" id="library">
+          <div class="section-header"><div><h2>My Library</h2><p>Your generated study sets are saved in this browser. Delete a set to remove it from your history and progress.</p></div></div>
+          <div class="library-list" id="library-list"><p class="helper-text">Your saved notes and study sets will appear here.</p></div>
+          <div class="status-message" id="library-status" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="section-card" id="tutor">
+          <div class="section-header"><div><h2>AI Tutor</h2><p>Ask about your current notes or latest saved study set.</p></div></div>
+          <form class="inline-form" id="tutor-form"><input id="tutor-question" type="text" placeholder="Ask a question about your notes..." aria-label="Question for the AI tutor" required><button class="button" type="submit" id="tutor-button">Ask Tutor</button></form>
+          <div class="answer-box" id="tutor-answer" hidden></div>
+          <div class="status-message" id="tutor-status" role="status" aria-live="polite"></div>
+        </section>
+
+        <section class="section-card" id="quiz">
+          <div class="section-header"><div><h2>Quiz Generation</h2><p>Build a multiple-choice quiz from your notes, or your latest saved study set.</p></div><div style="display:flex;gap:8px"><button class="copy-button" type="button" data-copy="quiz" id="copy-quiz" hidden>Copy quiz</button><button class="button" type="button" id="quiz-button">Generate Quiz</button></div></div>
+          <div class="status-message" id="quiz-status" role="status" aria-live="polite"></div>
+          <div class="quiz-result" id="quiz-result" role="status" aria-live="polite" hidden></div>
+          <div class="quiz-list" id="quiz-output"><p class="helper-text">Your quiz will appear here after generation.</p></div>
+        </section>
+
+        <section class="section-card" id="analytics">
+          <div class="section-header"><div><h2>Learning Analytics</h2><p>Quiz marks and accuracy based on your completed tests.</p></div></div>
+          <div class="analytics-summary">
+            <div class="analytics-stat"><span>Tests completed</span><strong id="analytics-quizzes">0</strong></div>
+            <div class="analytics-stat"><span>Marks earned</span><strong id="analytics-marks">0 / 0</strong></div>
+            <div class="analytics-stat"><span>Overall accuracy</span><strong id="analytics-accuracy">0%</strong></div>
+          </div>
+          <p class="helper-text" id="analytics-empty">Complete a 5-question test to start tracking your progress.</p>
+          <div class="analytics-bars" id="analytics-bars" role="img" aria-label="Average quiz accuracy for the last seven days"></div>
+          <div class="analytics-labels" id="analytics-labels"></div>
+        </section>
+
+        <section class="section-card" id="settings">
+          <div class="section-header"><div><h2>Settings</h2><p>Personalize ThinkSpaceAI to suit your study routine.</p></div></div>
+          <div class="settings-row"><div><strong>Appearance</strong><small>Choose dark or light mode.</small></div><button class="button secondary" type="button" data-theme-switch>Toggle theme</button></div>
+          <div class="settings-row"><div><strong>Ollama model</strong><small>Selected on the local server using the OLLAMA_MODEL setting.</small></div><span class="helper-text">Configured in Flask</span></div>
+        </section>
+        <footer>ThinkSpaceAI · Your notes stay yours. AI generation runs through your local Ollama connection.</footer>
+      </div>
+    </main>
+  </div>
+  <script>
+    let STORAGE_KEY = "";
+    const THEME_KEY = "studysync-theme";
+    let QUIZ_HISTORY_KEY = "";
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+    const COMPARISON_METHODS = ["zero_shot", "few_shot", "chain_of_thought"];
+    const COMPARISON_LABELS = {
+      zero_shot: "Zero-shot",
+      few_shot: "Few-shot",
+      chain_of_thought: "Chain-of-thought"
+    };
+    let activeStudySet = null;
+    let currentUser = null;
+    let authMode = "login";
+    let studySets = [];
+    let quizHistory = [];
+
+    function loadStudySets() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(saved) ? saved : [];
+      } catch (error) {
+        console.warn("Could not read saved ThinkSpaceAI notes.", error);
+        return [];
+      }
+    }
+
+    function saveStudySets() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(studySets));
+        return true;
+      } catch (error) {
+        console.warn("Could not save ThinkSpaceAI notes.", error);
+        return false;
+      }
+    }
+
+    function loadQuizHistory() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(QUIZ_HISTORY_KEY) || "[]");
+        if (!Array.isArray(saved)) return [];
+        return saved.filter((result) =>
+          result
+          && typeof result.date === "string"
+          && Number.isInteger(result.score)
+          && Number.isInteger(result.total)
+          && result.total > 0
+          && result.score >= 0
+          && result.score <= result.total
+        );
+      } catch (error) {
+        console.warn("Could not read ThinkSpaceAI quiz history.", error);
+        return [];
+      }
+    }
+
+    function saveQuizHistory() {
+      try {
+        localStorage.setItem(QUIZ_HISTORY_KEY, JSON.stringify(quizHistory));
+        return true;
+      } catch (error) {
+        console.warn("Could not save ThinkSpaceAI quiz history.", error);
+        return false;
+      }
+    }
+
+    function dateKey(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      const registering = mode === "register";
+      $("#auth-title").textContent = registering ? "Create your account" : "Welcome back";
+      $("#auth-description").textContent = registering
+        ? "Create an account to keep your study space private."
+        : "Sign in to continue to your learning space.";
+      $("#auth-submit").textContent = registering ? "Create account" : "Sign in";
+      $("#auth-switch-label").textContent = registering ? "Already have an account?" : "New to ThinkSpaceAI?";
+      $("#auth-mode-toggle").textContent = registering ? "Sign in" : "Create account";
+      $("#auth-confirm-field").hidden = !registering;
+      $("#auth-confirm").required = registering;
+      $("#auth-password").autocomplete = registering ? "new-password" : "current-password";
+      $("#auth-status").className = "status-message";
+      $("#auth-status").textContent = "";
+    }
+
+    function importLegacyBrowserData(email) {
+      const oldStudyKey = "studysync-study-sets";
+      const oldQuizKey = "thinkspaceai-quiz-history";
+      let studyData;
+      let quizData;
+      try {
+        const oldStudyData = localStorage.getItem(oldStudyKey);
+        const oldQuizData = localStorage.getItem(oldQuizKey);
+        if (!oldStudyData && !oldQuizData) return null;
+        if (localStorage.getItem(STORAGE_KEY) !== null || localStorage.getItem(QUIZ_HISTORY_KEY) !== null) return null;
+
+        studyData = oldStudyData ? JSON.parse(oldStudyData) : [];
+        quizData = oldQuizData ? JSON.parse(oldQuizData) : [];
+        if (
+          !Array.isArray(studyData)
+          || !studyData.every((item) =>
+            item
+            && typeof item === "object"
+            && (typeof item.id === "string" || Number.isInteger(item.id))
+            && typeof item.title === "string"
+            && typeof item.notes === "string"
+          )
+          || !Array.isArray(quizData)
+        ) {
+          throw new Error("Previous browser history has an unexpected format.");
+        }
+        if (!studyData.length && !quizData.length) return null;
+        if (!window.confirm(`Import your previous browser-only study sets and quiz results into ${email}? This moves them to this account so they are not shared with other accounts.`)) {
+          return "declined";
+        }
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(studyData));
+        try {
+          localStorage.setItem(QUIZ_HISTORY_KEY, JSON.stringify(quizData));
+        } catch (error) {
+          localStorage.removeItem(STORAGE_KEY);
+          throw error;
+        }
+        localStorage.removeItem(oldStudyKey);
+        localStorage.removeItem(oldQuizKey);
+        return "imported";
+      } catch (error) {
+        console.warn("Could not import previous ThinkSpaceAI browser history.", error);
+        return "failed";
+      }
+    }
+
+    function clearUserStudyView() {
+      activeStudySet = null;
+      $("#notes-input").value = "";
+      $("#summary-output").textContent = "Your concise summary will appear here.";
+      $("#summary-output").classList.add("empty-result");
+      $("#terms-output").innerHTML = '<p class="empty-result">Important concepts and definitions will appear here.</p>';
+      $("#flashcards-output").innerHTML = '<p class="empty-result">Your question-and-answer cards will appear here.</p>';
+      $("#comparison-output").innerHTML = '<p class="empty-result">Generate study materials to compare summary quality across prompt techniques.</p>';
+      $("#quiz-output").innerHTML = '<p class="helper-text">Your quiz will appear here after generation.</p>';
+      $("#quiz-result").textContent = "";
+      $("#quiz-result").hidden = true;
+      $("#copy-quiz").hidden = true;
+      $("#quiz-status").className = "status-message";
+      $("#quiz-status").textContent = "";
+      $("#tutor-answer").textContent = "";
+      $("#tutor-answer").hidden = true;
+      $("#tutor-status").className = "status-message";
+      $("#tutor-status").textContent = "";
+      $("#library-status").className = "status-message";
+      $("#library-status").textContent = "";
+    }
+
+    function initializeAuthenticatedSession(user, isNewAccount = false) {
+      currentUser = user;
+      STORAGE_KEY = `thinkspaceai-study-sets:${user.id}`;
+      QUIZ_HISTORY_KEY = `thinkspaceai-quiz-history:${user.id}`;
+      const migrationStatus = isNewAccount ? importLegacyBrowserData(user.email) : null;
+      studySets = loadStudySets();
+      quizHistory = loadQuizHistory();
+      clearUserStudyView();
+      $("#signed-in-email").textContent = user.email;
+      $("#user-avatar").textContent = user.email.charAt(0).toUpperCase();
+      document.body.classList.add("authenticated");
+      updateDashboard();
+      if (studySets.length) {
+        $("#notes-input").value = studySets[0].notes;
+        renderStudySet(studySets[0], false);
+      }
+      if (migrationStatus === "imported") {
+        showStatus($("#library-status"), "Your previous browser-only notes and quiz results were imported into this account.", "success");
+      } else if (migrationStatus === "declined") {
+        showStatus($("#library-status"), "Your previous browser-only history was left unchanged and was not added to this account.", "success");
+      } else if (migrationStatus === "failed") {
+        showStatus($("#library-status"), "Your previous browser history could not be imported; it remains on this device.", "error");
+      }
+    }
+
+    async function restoreAuthentication() {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (response.status === 401) return;
+        const user = await response.json();
+        if (!response.ok) throw new Error(user.error || "Could not restore your sign-in.");
+        initializeAuthenticatedSession(user);
+      } catch (error) {
+        showStatus($("#auth-status"), error.message || "Could not connect to ThinkSpaceAI.", "error");
+      }
+    }
+
+    function showStatus(element, message, kind = "") {
+      element.textContent = message;
+      element.className = `status-message visible${kind ? ` ${kind}` : ""}`;
+    }
+
+    function setTheme(theme) {
+      const selected = theme === "light" ? "light" : "dark";
+      document.documentElement.dataset.theme = selected;
+      $("#theme-label").textContent = selected === "dark" ? "Dark mode" : "Light mode";
+      $("#theme-toggle").setAttribute("aria-label", `Switch to ${selected === "dark" ? "light" : "dark"} mode`);
+      $("#theme-icon").innerHTML = selected === "dark"
+        ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'
+        : '<path d="M20.9 13A8.5 8.5 0 0 1 11 3.1 8.5 8.5 0 1 0 20.9 13Z"/>';
+      try {
+        localStorage.setItem(THEME_KEY, selected);
+      } catch (error) {
+        console.warn("Could not save the selected theme.", error);
+      }
+    }
+
+    function updateDashboard() {
+      const totalCards = studySets.reduce((count, item) => count + (item.flashcards?.length || 0), 0);
+      const totalMarks = quizHistory.reduce((total, result) => total + result.total, 0);
+      const earnedMarks = quizHistory.reduce((total, result) => total + result.score, 0);
+      const progress = totalMarks ? Math.round((earnedMarks / totalMarks) * 100) : 0;
+      $("#documents-count").textContent = studySets.length;
+      $("#summaries-count").textContent = studySets.length;
+      $("#flashcards-count").textContent = totalCards;
+      $("#progress-value").textContent = `${progress}%`;
+      $("#ring-label").textContent = `${progress}%`;
+      $("#progress-fill").style.width = `${progress}%`;
+      $("#ring-progress").style.strokeDashoffset = String(220 - (220 * progress / 100));
+      renderActivity();
+      renderLibrary($("#search-input").value);
+      renderAnalytics();
+    }
+
+    function renderAnalytics() {
+      const totalMarks = quizHistory.reduce((total, result) => total + result.total, 0);
+      const earnedMarks = quizHistory.reduce((total, result) => total + result.score, 0);
+      const accuracy = totalMarks ? Math.round((earnedMarks / totalMarks) * 100) : 0;
+      $("#analytics-quizzes").textContent = quizHistory.length;
+      $("#analytics-marks").textContent = `${earnedMarks} / ${totalMarks}`;
+      $("#analytics-accuracy").textContent = `${accuracy}%`;
+      $("#analytics-empty").hidden = quizHistory.length > 0;
+
+      const today = new Date();
+      const days = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6 + index);
+        const key = dateKey(date);
+        const results = quizHistory.filter((result) => result.date === key);
+        const possible = results.reduce((sum, result) => sum + result.total, 0);
+        const earned = results.reduce((sum, result) => sum + result.score, 0);
+        const percent = possible ? Math.round((earned / possible) * 100) : 0;
+        const label = date.toLocaleDateString(undefined, { weekday: "short" });
+        const barHeight = possible ? Math.max(percent, 4) : 0;
+        return `
+          <div class="analytics-day">
+            <span class="analytics-day-value">${possible ? `${percent}%` : "—"}</span>
+            <div class="analytics-bar${possible ? "" : " empty"}" style="height:${barHeight}%" title="${key}: ${earned}/${possible} marks" aria-label="${label}: ${earned} of ${possible} marks"></div>
+          </div>`;
+      });
+      $("#analytics-bars").innerHTML = days.join("");
+      $("#analytics-labels").innerHTML = Array.from({ length: 7 }, (_, index) => {
+        const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6 + index);
+        return `<span>${date.toLocaleDateString(undefined, { weekday: "short" })}</span>`;
+      }).join("");
+    }
+
+    function recordQuizResult(score, total) {
+      const notes = $("#notes-input").value.trim();
+      const studySetId = activeStudySet?.notes === notes ? activeStudySet.id : null;
+      quizHistory.unshift({
+        date: dateKey(new Date()),
+        score,
+        total,
+        studySetId
+      });
+      quizHistory = quizHistory.slice(0, 100);
+      return saveQuizHistory();
+    }
+
+    function renderActivity() {
+      const activity = $("#activity-list");
+      if (!studySets.length) {
+        activity.innerHTML = '<div class="activity-row"><span class="activity-dot">✦</span><span class="activity-name">Your learning journey starts here</span><span class="activity-time">Now</span></div>';
+        return;
+      }
+      activity.innerHTML = studySets.slice(0, 3).map((item) =>
+        `<div class="activity-row"><span class="activity-dot">✦</span><span class="activity-name">${escapeHtml(item.title)}</span><span class="activity-time">${escapeHtml(item.timeLabel || "Recently")}</span></div>`
+      ).join("");
+    }
+
+    function renderLibrary(filter = "") {
+      const list = $("#library-list");
+      const query = filter.trim().toLowerCase();
+      const matches = studySets.filter((item) => item.title.toLowerCase().includes(query) || item.notes.toLowerCase().includes(query));
+      if (!matches.length) {
+        list.innerHTML = `<p class="helper-text">${studySets.length ? "No notes match your search." : "Your saved notes and study sets will appear here."}</p>`;
+        return;
+      }
+      list.innerHTML = matches.map((item) => `
+        <article class="library-item">
+          <div class="activity-dot"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 2h10l5 5v15H5V2Zm9 1.5V8h4.5L14 3.5ZM8 12v2h9v-2H8Zm0 4v2h7v-2H8Z"/></svg></div>
+          <div><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.timeLabel || "Saved study set")} · ${item.flashcards?.length || 0} flashcards</small></div>
+          <button type="button" class="library-open" data-open-id="${escapeHtml(item.id)}">Open</button>
+          <button type="button" class="library-delete" data-delete-id="${escapeHtml(item.id)}" aria-label="Delete ${escapeHtml(item.title)}">Delete</button>
+        </article>`).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[char]);
+    }
+
+    function renderPromptComparison(comparison) {
+      const output = $("#comparison-output");
+      if ($("#comparison-format").value === "json") {
+        output.innerHTML = `<pre class="comparison-json">${escapeHtml(JSON.stringify(comparison, null, 2))}</pre>`;
+        return;
+      }
+
+      const hasSummaryVariants = COMPARISON_METHODS.every((method) => {
+        const variant = comparison[method];
+        return variant
+          && typeof variant === "object"
+          && typeof variant.summary === "string"
+          && variant.quality
+          && typeof variant.quality === "object";
+      });
+      if (!hasSummaryVariants) {
+        output.innerHTML = `<div class="comparison-list">${COMPARISON_METHODS.map((method) =>
+          `<div class="comparison-item"><strong>${COMPARISON_LABELS[method]}</strong><p>${escapeHtml(comparison[method] || "No comparison was provided.")}</p></div>`
+        ).join("")}</div>`;
+        return;
+      }
+
+      const scoreFor = (method) => {
+        const quality = comparison[method].quality;
+        return typeof quality.average_score === "number"
+          ? quality.average_score
+          : Math.round((quality.faithfulness + quality.coverage + quality.clarity) / 3 * 10) / 10;
+      };
+      const winner = COMPARISON_METHODS.includes(comparison.winner)
+        ? comparison.winner
+        : COMPARISON_METHODS.reduce((best, method) => scoreFor(method) > scoreFor(best) ? method : best);
+      const winnerScore = scoreFor(winner);
+      output.innerHTML = `
+        <div class="comparison-scroll">
+          <table class="comparison-table">
+            <thead><tr><th scope="col">Technique</th><th scope="col">Summary</th><th scope="col">Faithfulness</th><th scope="col">Coverage</th><th scope="col">Clarity</th><th scope="col">Avg.</th><th scope="col">Rating rationale</th></tr></thead>
+            <tbody>${COMPARISON_METHODS.map((method) => {
+              const variant = comparison[method];
+              const quality = variant.quality;
+              return `<tr class="${method === winner ? "comparison-winner" : ""}">
+                <th scope="row">${COMPARISON_LABELS[method]}</th>
+                <td class="comparison-summary">${escapeHtml(variant.summary)}</td>
+                <td class="comparison-score">${escapeHtml(quality.faithfulness)}/5</td>
+                <td class="comparison-score">${escapeHtml(quality.coverage)}/5</td>
+                <td class="comparison-score">${escapeHtml(quality.clarity)}/5</td>
+                <td class="comparison-score">${scoreFor(method)}/5</td>
+                <td>${escapeHtml(quality.rationale || "")}</td>
+              </tr>`;
+            }).join("")}</tbody>
+          </table>
+        </div>
+        <p class="comparison-note">Highest-rated: ${COMPARISON_LABELS[winner]} (${winnerScore}/5). Quality ratings are AI estimates, not objective measurements.</p>`;
+    }
+
+    function getComparisonCopyText(comparison) {
+      if ($("#comparison-format").value === "json") return JSON.stringify(comparison, null, 2);
+      const markdownCell = (value) => String(value || "").replace(/\|/g, "\\|").replace(/\r?\n/g, "<br>");
+      const header = "| Technique | Summary | Faithfulness | Coverage | Clarity | Average | Rating rationale |";
+      const separator = "| --- | --- | ---: | ---: | ---: | ---: | --- |";
+      const rows = COMPARISON_METHODS.map((method) => {
+        const variant = comparison[method];
+        const structured = variant && typeof variant === "object";
+        const quality = structured ? variant.quality || {} : {};
+        const summary = structured ? variant.summary || "" : variant || "";
+        const scores = ["faithfulness", "coverage", "clarity"].map((metric) =>
+          Number.isInteger(quality[metric]) ? `${quality[metric]}/5` : ""
+        );
+        const average = typeof quality.average_score === "number"
+          ? `${quality.average_score}/5`
+          : scores.every(Boolean)
+            ? `${Math.round(scores.reduce((sum, score) => sum + Number.parseInt(score, 10), 0) / 3 * 10) / 10}/5`
+            : "";
+        return `| ${COMPARISON_LABELS[method]} | ${markdownCell(summary)} | ${scores[0]} | ${scores[1]} | ${scores[2]} | ${average} | ${markdownCell(quality.rationale)} |`;
+      });
+      const hasRatings = COMPARISON_METHODS.every((method) => comparison[method]?.quality);
+      if (!hasRatings) return [header, separator, ...rows].join("\n");
+      const scoreFor = (method) => {
+        const quality = comparison[method].quality;
+        return typeof quality.average_score === "number"
+          ? quality.average_score
+          : Math.round((quality.faithfulness + quality.coverage + quality.clarity) / 3 * 10) / 10;
+      };
+      const winner = COMPARISON_METHODS.includes(comparison.winner)
+        ? comparison.winner
+        : COMPARISON_METHODS.reduce((best, method) => scoreFor(method) > scoreFor(best) ? method : best);
+      return [
+        header,
+        separator,
+        ...rows,
+        "",
+        `Highest-rated: ${COMPARISON_LABELS[winner]} (${scoreFor(winner)}/5). Quality ratings are AI estimates.`
+      ].join("\n");
+    }
+
+    function renderStudySet(item, scroll = true) {
+      activeStudySet = item;
+      $("#summary-output").textContent = item.summary || "No summary was provided.";
+      $("#summary-output").classList.remove("empty-result");
+      $("#terms-output").innerHTML = (item.key_terms || []).map((term) =>
+        `<div class="term-item"><strong>${escapeHtml(term.term)}:</strong> ${escapeHtml(term.definition)}</div>`
+      ).join("") || '<p class="empty-result">No key terms were provided.</p>';
+      $("#flashcards-output").innerHTML = (item.flashcards || []).map((card, index) =>
+        `<button class="flashcard" type="button" data-question="${escapeHtml(card.question)}" data-answer="${escapeHtml(card.answer)}"><strong>${index + 1}. ${escapeHtml(card.question)}</strong><span>Click to reveal answer</span></button>`
+      ).join("") || '<p class="empty-result">No flashcards were provided.</p>';
+      const comparison = item.prompt_comparison || {};
+      renderPromptComparison(comparison);
+      if (scroll) $("#results").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function postJson(path, payload) {
+      let response;
+      try {
+        response = await fetch(path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+      } catch {
+        throw new Error("Cannot reach ThinkSpaceAI. Make sure the Flask app is running.");
+      }
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || `Request failed (${response.status}).`);
+      return data;
+    }
+
+    function getNotes() {
+      return $("#notes-input").value.trim() || activeStudySet?.notes || studySets[0]?.notes || "";
+    }
+
+    async function readUploadedDocument(file) {
+      const formData = new FormData();
+      formData.append("file", file, file.name);
+      let response;
+      try {
+        response = await fetch("/api/read-document", { method: "POST", body: formData });
+      } catch {
+        throw new Error("Cannot reach ThinkSpaceAI. Make sure the Flask app is running.");
+      }
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || `Document reading failed (${response.status}).`);
+      if (typeof result.notes !== "string" || !result.notes.trim()) {
+        throw new Error("No readable notes were returned from that file.");
+      }
+      return result;
+    }
+
+    async function loadNotesFile(file) {
+      const extension = file.name.split(".").pop().toLowerCase();
+      const textFile = ["txt", "md"].includes(extension);
+      const documentFile = ["pdf", "png", "jpg", "jpeg"].includes(extension);
+      if (!textFile && !documentFile) {
+        showStatus($("#generate-status"), "Choose a PDF, PNG, JPEG, TXT, or Markdown file.", "error");
+        return;
+      }
+      if (file.size > 20 * 1024 * 1024) {
+        showStatus($("#generate-status"), "Files must be 20 MB or smaller.", "error");
+        return;
+      }
+
+      showStatus(
+        $("#generate-status"),
+        textFile ? "Reading your text file..." : "Reading your PDF or image locally. Scanned pages may use Ollama Vision..."
+      );
+      try {
+        let notes;
+        let pageCount = 0;
+        if (textFile) {
+          notes = await file.text();
+        } else {
+          const result = await readUploadedDocument(file);
+          notes = result.notes;
+          pageCount = Number.isInteger(result.pages) ? result.pages : 0;
+        }
+        if (!notes.trim()) throw new Error("No readable text was found in that file.");
+        $("#notes-input").value = notes;
+        $("#file-name").textContent = file.name;
+        const pageLabel = pageCount > 1 ? ` (${pageCount} pages)` : "";
+        showStatus(
+          $("#generate-status"),
+          `${file.name}${pageLabel} is ready. Review the extracted notes, then generate your study materials.`,
+          "success"
+        );
+      } catch (error) {
+        showStatus($("#generate-status"), error.message || "Could not read the selected file.", "error");
+      }
+    }
+
+    function getCopyText(kind) {
+      if (!activeStudySet && kind !== "quiz") return "";
+      if (kind === "summary") return `AI Summary\n${$("#summary-output").innerText}`;
+      if (kind === "terms") return `Key Terms\n${$("#terms-output").innerText}`;
+      if (kind === "flashcards") {
+        const cards = $$(".flashcard", $("#flashcards-output"));
+        return `Flashcards\n${cards.map((card, index) => `${index + 1}. ${card.dataset.question}\nAnswer: ${card.dataset.answer}`).join("\n\n")}`;
+      }
+      if (kind === "comparison") return `Summary Prompt Comparison\n${getComparisonCopyText(activeStudySet.prompt_comparison || {})}`;
+      if (kind === "all") {
+        return [
+          getCopyText("summary"),
+          getCopyText("terms"),
+          getCopyText("flashcards"),
+          getCopyText("comparison")
+        ].join("\n\n");
+      }
+      if (kind === "quiz") {
+        const questions = $$(".quiz-question", $("#quiz-output"));
+        const complete = questions.length > 0 && questions.every((question) => question.dataset.correct !== undefined);
+        return questions.map((question, index) => {
+          const options = $$(".quiz-option", question).map((option) => option.innerText);
+          const mark = complete
+            ? `\nMark: ${question.dataset.correct === "true" ? "1" : "0"} / 1 · Correct answer: ${question.dataset.answer}`
+            : "";
+          return `${index + 1}. ${question.querySelector("strong").innerText}\n${options.map((option) => `- ${option}`).join("\n")}${mark}`;
+        }).join("\n\n");
+      }
+      return "";
+    }
+
+    $("#comparison-format").addEventListener("change", () => {
+      if (activeStudySet) renderPromptComparison(activeStudySet.prompt_comparison || {});
+    });
+
+    async function writeClipboard(text) {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+      }
+      const field = document.createElement("textarea");
+      field.value = text;
+      field.style.position = "fixed";
+      field.style.opacity = "0";
+      document.body.appendChild(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Clipboard access is unavailable in this browser.");
+    }
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-copy]");
+      if (!button) return;
+      const text = getCopyText(button.dataset.copy);
+      if (!text.trim()) {
+        showStatus($("#generate-status"), "Generate study materials before copying them.", "error");
+        return;
+      }
+      const originalLabel = button.textContent;
+      try {
+        await writeClipboard(text);
+        button.textContent = "Copied!";
+      } catch (error) {
+        console.error("Could not copy generated text.", error);
+        button.textContent = "Copy failed";
+      }
+      window.setTimeout(() => { button.textContent = originalLabel; }, 1600);
+    });
+
+    $("#theme-toggle").addEventListener("click", () => {
+      setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+    });
+    $$("[data-theme-switch]").forEach((button) => button.addEventListener("click", () => {
+      setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark");
+    }));
+
+    $("#mobile-menu").addEventListener("click", () => {
+      const open = $("#sidebar").classList.toggle("open");
+      $("#overlay").classList.toggle("visible", open);
+      $("#mobile-menu").setAttribute("aria-expanded", String(open));
+    });
+    $("#overlay").addEventListener("click", () => {
+      $("#sidebar").classList.remove("open");
+      $("#overlay").classList.remove("visible");
+      $("#mobile-menu").setAttribute("aria-expanded", "false");
+    });
+
+    $$("[data-scroll]").forEach((button) => button.addEventListener("click", () => {
+      document.getElementById(button.dataset.scroll)?.scrollIntoView({ behavior: "smooth" });
+      $("#sidebar").classList.remove("open");
+      $("#overlay").classList.remove("visible");
+    }));
+    $$(".nav-link").forEach((link) => link.addEventListener("click", () => {
+      $$(".nav-link").forEach((item) => item.classList.remove("active"));
+      link.classList.add("active");
+      $("#sidebar").classList.remove("open");
+      $("#overlay").classList.remove("visible");
+    }));
+
+    $("#search-input").addEventListener("input", (event) => {
+      renderLibrary(event.target.value);
+      if (event.target.value.trim()) $("#library").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    $("#file-upload").addEventListener("change", async (event) => {
+      const file = event.target.files?.[0];
+      $("#file-upload").value = "";
+      if (!file) return;
+      await loadNotesFile(file);
+    });
+    const dropZone = $("#upload-drop");
+    dropZone.addEventListener("dragover", (event) => {
+      event.preventDefault();
+      dropZone.style.borderColor = "var(--cyan)";
+    });
+    dropZone.addEventListener("dragleave", () => { dropZone.style.borderColor = ""; });
+    dropZone.addEventListener("drop", async (event) => {
+      event.preventDefault();
+      dropZone.style.borderColor = "";
+      const file = event.dataTransfer.files?.[0];
+      if (!file) return;
+      $("#file-upload").value = "";
+      await loadNotesFile(file);
+    });
+
+    $("#generate-button").addEventListener("click", async () => {
+      const notes = getNotes();
+      const button = $("#generate-button");
+      if (!notes) {
+        showStatus($("#generate-status"), "Add or upload your lecture notes first.", "error");
+        $("#notes-input").focus();
+        return;
+      }
+      button.disabled = true;
+      button.innerHTML = '<span class="spinner" aria-hidden="true">⏳</span>Generating...';
+      showStatus($("#generate-status"), "Ollama is creating your study materials. This can take a little while.");
+      try {
+        const output = await postJson("/api/generate", { notes });
+        const item = {
+          id: `${Date.now()}`,
+          title: $("#file-name").textContent !== "Drop a notes file here" ? $("#file-name").textContent : `Study notes · ${new Date().toLocaleDateString()}`,
+          notes,
+          summary: output.summary,
+          key_terms: output.key_terms || [],
+          flashcards: output.flashcards || [],
+          prompt_comparison: output.prompt_comparison || {},
+          timeLabel: new Date().toLocaleString()
+        };
+        studySets.unshift(item);
+        studySets = studySets.slice(0, 50);
+        const saved = saveStudySets();
+        renderStudySet(item);
+        updateDashboard();
+        showStatus(
+          $("#generate-status"),
+          saved ? "Study materials generated and saved to your library." : "Study materials generated, but could not be saved in this browser.",
+          saved ? "success" : "error"
+        );
+      } catch (error) {
+        showStatus($("#generate-status"), error.message, "error");
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="m12 2 2.3 7.1L21 12l-6.7 2.9L12 22l-2.3-7.1L3 12l6.7-2.9L12 2Z"/></svg>Generate Study Materials';
+      }
+    });
+
+    $("#flashcards-output").addEventListener("click", (event) => {
+      const card = event.target.closest(".flashcard");
+      if (!card) return;
+      const flipped = card.classList.toggle("flipped");
+      card.innerHTML = flipped
+        ? `<strong>${escapeHtml(card.dataset.answer)}</strong><span>Answer · click to see question</span>`
+        : `<strong>${escapeHtml(card.dataset.question)}</strong><span>Click to reveal answer</span>`;
+    });
+
+    $("#library-list").addEventListener("click", (event) => {
+      const deleteButton = event.target.closest("[data-delete-id]");
+      if (deleteButton) {
+        const item = studySets.find((entry) => entry.id === deleteButton.dataset.deleteId);
+        if (!item || !window.confirm(`Delete "${item.title}" from your library and study history?`)) return;
+
+        const previousStudySets = studySets;
+        const previousQuizHistory = quizHistory;
+        studySets = studySets.filter((entry) => entry.id !== item.id);
+        quizHistory = quizHistory.filter((result) => result.studySetId !== item.id);
+        if (!saveStudySets() || !saveQuizHistory()) {
+          studySets = previousStudySets;
+          quizHistory = previousQuizHistory;
+          saveStudySets();
+          saveQuizHistory();
+          showStatus($("#library-status"), "Could not delete this study set from browser storage. Please try again.", "error");
+          return;
+        }
+
+        if (activeStudySet?.id === item.id) {
+          $("#file-upload").value = "";
+          $("#file-name").textContent = "Drop a notes file here";
+          $("#quiz-output").innerHTML = '<p class="helper-text">Your quiz will appear here after generation.</p>';
+          $("#quiz-result").hidden = true;
+          $("#quiz-result").textContent = "";
+          $("#copy-quiz").hidden = true;
+          $("#quiz-status").className = "status-message";
+          $("#quiz-status").textContent = "";
+          $("#tutor-answer").hidden = true;
+          $("#tutor-status").className = "status-message";
+          $("#tutor-status").textContent = "";
+          const nextStudySet = studySets[0];
+          if (nextStudySet) {
+            $("#notes-input").value = nextStudySet.notes;
+            renderStudySet(nextStudySet, false);
+          } else {
+            activeStudySet = null;
+            $("#notes-input").value = "";
+            $("#summary-output").textContent = "Your concise summary will appear here.";
+            $("#summary-output").classList.add("empty-result");
+            $("#terms-output").innerHTML = '<p class="empty-result">Important concepts and definitions will appear here.</p>';
+            $("#flashcards-output").innerHTML = '<p class="empty-result">Your question-and-answer cards will appear here.</p>';
+            $("#comparison-output").innerHTML = '<p class="empty-result">Generate study materials to compare summary quality across prompt techniques.</p>';
+          }
+        }
+        updateDashboard();
+        showStatus($("#library-status"), `"${item.title}" was deleted from your library and progress.`, "success");
+        return;
+      }
+
+      const openButton = event.target.closest("[data-open-id]");
+      if (!openButton) return;
+      const item = studySets.find((entry) => entry.id === openButton.dataset.openId);
+      if (item) renderStudySet(item);
+    });
+
+    $("#tutor-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const question = $("#tutor-question").value.trim();
+      const notes = getNotes();
+      if (!notes) {
+        showStatus($("#tutor-status"), "Add or upload notes in Upload & Learn before asking a question.", "error");
+        return;
+      }
+      const button = $("#tutor-button");
+      button.disabled = true;
+      button.textContent = "Thinking...";
+      showStatus($("#tutor-status"), "Asking your local AI tutor...");
+      try {
+        const result = await postJson("/api/tutor", { notes, question });
+        $("#tutor-answer").textContent = result.answer;
+        $("#tutor-answer").hidden = false;
+        showStatus($("#tutor-status"), "Answer ready.", "success");
+      } catch (error) {
+        showStatus($("#tutor-status"), error.message, "error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Ask Tutor";
+      }
+    });
+
+    $("#quiz-button").addEventListener("click", async () => {
+      const notes = getNotes();
+      if (!notes) {
+        showStatus($("#quiz-status"), "Add or upload notes in Upload & Learn before generating a quiz.", "error");
+        return;
+      }
+      const button = $("#quiz-button");
+      button.disabled = true;
+      button.textContent = "Generating...";
+      showStatus($("#quiz-status"), "Building your quiz with Ollama...");
+      try {
+        const result = await postJson("/api/quiz", { notes });
+        if (
+          !Array.isArray(result.questions)
+          || result.questions.length !== 5
+          || result.questions.some((question) =>
+            !question
+            || typeof question.question !== "string"
+            || !Array.isArray(question.options)
+            || question.options.length !== 4
+            || typeof question.answer !== "string"
+            || !question.options.includes(question.answer)
+          )
+        ) {
+          throw new Error("The AI returned an incomplete quiz. Please try again.");
+        }
+        $("#quiz-result").hidden = true;
+        $("#quiz-result").textContent = "";
+        $("#quiz-output").innerHTML = result.questions.map((question, index) => `
+          <article class="quiz-question" data-answer="${escapeHtml(question.answer)}">
+            <strong>${index + 1}. ${escapeHtml(question.question)}</strong>
+            ${question.options.map((option) => `<button type="button" class="quiz-option">${escapeHtml(option)}</button>`).join("")}
+            <p class="quiz-feedback" hidden></p>
+          </article>`).join("");
+        $("#copy-quiz").hidden = false;
+        showStatus($("#quiz-status"), "Quiz generated. Select an option to check your answer.", "success");
+      } catch (error) {
+        showStatus($("#quiz-status"), error.message, "error");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Generate Quiz";
+      }
+    });
+    $("#quiz-output").addEventListener("click", (event) => {
+      const option = event.target.closest(".quiz-option");
+      if (!option) return;
+      const question = option.closest(".quiz-question");
+      if (question.dataset.answered) return;
+      question.dataset.answered = "true";
+      question.dataset.selected = option.textContent;
+      $$(".quiz-option", question).forEach((answerOption) => { answerOption.disabled = true; });
+      option.classList.add("selected");
+
+      const questions = $$(".quiz-question", $("#quiz-output"));
+      if (questions.length && questions.every((item) => item.dataset.answered === "true")) {
+        questions.forEach((item) => {
+          const isCorrect = item.dataset.selected === item.dataset.answer;
+          item.dataset.correct = String(isCorrect);
+          const options = $$(".quiz-option", item);
+          const selectedOption = options.find((answerOption) => answerOption.textContent === item.dataset.selected);
+          const correctOption = options.find((answerOption) => answerOption.textContent === item.dataset.answer);
+          selectedOption?.classList.add(isCorrect ? "correct" : "incorrect");
+          if (!isCorrect) correctOption?.classList.add("correct");
+
+          const feedback = $(".quiz-feedback", item);
+          feedback.textContent = isCorrect
+            ? "1 / 1 mark"
+            : `0 / 1 mark · Correct answer: ${item.dataset.answer}`;
+          feedback.className = `quiz-feedback ${isCorrect ? "correct" : "incorrect"}`;
+          feedback.hidden = false;
+        });
+        const score = questions.filter((item) => item.dataset.correct === "true").length;
+        const percent = Math.round((score / questions.length) * 100);
+        $("#quiz-result").textContent = `Test complete — ${score} / ${questions.length} marks (${percent}%). One mark per question.`;
+        $("#quiz-result").hidden = false;
+        const saved = recordQuizResult(score, questions.length);
+        updateDashboard();
+        showStatus(
+          $("#quiz-status"),
+          saved ? "Test completed and your progress has been saved." : "Test completed, but the result could not be saved to analytics.",
+          saved ? "success" : "error"
+        );
+      }
+    });
+
+    $("#auth-mode-toggle").addEventListener("click", () => {
+      setAuthMode(authMode === "login" ? "register" : "login");
+    });
+
+    $("#auth-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const email = $("#auth-email").value.trim();
+      const password = $("#auth-password").value;
+      if (authMode === "register" && password !== $("#auth-confirm").value) {
+        showStatus($("#auth-status"), "The passwords do not match.", "error");
+        return;
+      }
+
+      const button = $("#auth-submit");
+      const isNewAccount = authMode === "register";
+      button.disabled = true;
+      button.textContent = isNewAccount ? "Creating account…" : "Signing in…";
+      try {
+        const response = await fetch(`/api/auth/${isNewAccount ? "register" : "login"}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Authentication failed. Please try again.");
+        if (!Number.isInteger(result.id) || typeof result.email !== "string") {
+          throw new Error("The server returned an invalid account response.");
+        }
+        initializeAuthenticatedSession(result, isNewAccount);
+        $("#auth-form").reset();
+        setAuthMode("login");
+      } catch (error) {
+        showStatus($("#auth-status"), error.message || "Could not connect to ThinkSpaceAI.", "error");
+      } finally {
+        button.disabled = false;
+        button.textContent = authMode === "register" ? "Create account" : "Sign in";
+      }
+    });
+
+    $("#logout-button").addEventListener("click", async () => {
+      const button = $("#logout-button");
+      button.disabled = true;
+      try {
+        const response = await fetch("/api/auth/logout", { method: "POST" });
+        if (!response.ok) throw new Error("Could not sign out. Please try again.");
+        document.body.classList.remove("authenticated");
+        currentUser = null;
+        STORAGE_KEY = "";
+        QUIZ_HISTORY_KEY = "";
+        studySets = [];
+        quizHistory = [];
+        clearUserStudyView();
+        updateDashboard();
+        $("#auth-form").reset();
+        setAuthMode("login");
+      } catch (error) {
+        showStatus($("#library-status"), error.message || "Could not sign out.", "error");
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    try {
+      setTheme(localStorage.getItem(THEME_KEY) || "dark");
+    } catch (error) {
+      console.warn("Could not load the saved theme.", error);
+      setTheme("dark");
+    }
+    setAuthMode("login");
+    restoreAuthentication();
+  </script>
+</body>
+</html>
